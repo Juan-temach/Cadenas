@@ -27,40 +27,71 @@ impl Cadena {
     }
 
     fn obt_char(&self, posicion: usize) -> char {
-        //dada una posicion, devolver el caracter en esa posicion
+        // dada una posicion, devolver el caracter en esa posicion
         if posicion > 0 && posicion <= self.longitud {
-            self.caracteres[posicion-1]
+            self.caracteres[posicion - 1]
         } else {
             '\0'
         }
     }
 
     fn cant_apar_char(&self, c: char) -> u32 {
-        //dado un caracter, devolver la cantidad de veces
-        //que aparece en la cadena
+        // dado un caracter, devolver la cantidad de veces que aparece en la cadena
         let mut contador = 0;
         for i in 0..self.longitud {
             if self.caracteres[i] == c {
-                contador += 1
-            }            
+                contador += 1;
+            }
         }
         contador
     }
 
-   /*fn mas_repetido(&self) -> char {
-        //Devuelve el caracter que mas veces se repite.
-        //si todos aparecen 1 sola vezm, devuelve el 1ro
-   } */
+    fn mas_repetido(&self) -> char {
+        // Devuelve el caracter que mas veces se repite.
+        // si todos aparecen 1 sola vez, devuelve el 1ro
+        if self.longitud == 0 {
+            return '\0';
+        }
+        let mut max_char = self.caracteres[0];
+        let mut max_count = 0;
+        for i in 0..self.longitud {
+            let c = self.caracteres[i];
+            let count = self.cant_apar_char(c);
+            if count > max_count {
+                max_count = count;
+                max_char = c;
+            }
+        }
+        max_char
+    }
 
-    /*fn conertir_mayuscula(&self) {
-    }*/
+    fn convertir_mayusculas(&mut self) {
+        for i in 0..self.longitud {
+            self.caracteres[i] = self.caracteres[i].to_ascii_uppercase();
+        }
+    }
 
-    /*fn invertir(&self) {
-    }*/    
+    fn invertir(&mut self) {
+        let len = self.longitud;
+        for i in 0..len / 2 {
+            let temp = self.caracteres[i];
+            self.caracteres[i] = self.caracteres[len - 1 - i];
+            self.caracteres[len - 1 - i] = temp;
+        }
+    }
 
-    /*fn es_palindromo(&self) -> bool {
-    }*/
-    
+    fn es_palindromo(&self) -> bool {
+        if self.longitud == 0 {
+            return true; // cadena vacía se considera palíndromo
+        }
+        for i in 0..self.longitud / 2 {
+            if self.caracteres[i] != self.caracteres[self.longitud - 1 - i] {
+                return false;
+            }
+        }
+        true
+    }
+
     // limpia la cadena para poder ingresar una nueva
     fn limpiar(&mut self) {
         self.longitud = 0;
@@ -106,10 +137,10 @@ fn mostrar_menu(c: &Cadena) {
     println!("║  3. Longitud                     ║");
     println!("║  4. Obtener carácter (posición)  ║");
     println!("║  5. Cant Repetido carácter       ║");
-    println!("║  6. Char más repetido            ║");  // ← nuevo
-    println!("║  7. Convertir a mayúsculas       ║");  // ← nuevo
-    println!("║  8. Invertir cadena              ║");  // ← nuevo
-    println!("║  9. ¿Es palíndromo?              ║");  // ← nuevo
+    println!("║  6. Char más repetido            ║");
+    println!("║  7. Convertir a mayúsculas       ║");
+    println!("║  8. Invertir cadena              ║");
+    println!("║  9. ¿Es palíndromo?              ║");
     println!("╠══════════════════════════════════╣");
     println!("║  Q. Salir                        ║");
     println!("╚══════════════════════════════════╝");
@@ -122,7 +153,7 @@ fn main() {
     println!("  Cadenas - POO — Programación I   ");
     println!("════════════════════════════════════");
 
-    let mut c = Cadena::new(); //definiendo la instancia de tipo Cadena
+    let mut c = Cadena::new(); // definiendo la instancia de tipo Cadena
 
     loop {
         mostrar_menu(&c);
@@ -150,26 +181,26 @@ fn main() {
 
             "3" => println!("  Longitud: → {}", c.obt_longitud()),
 
-           "4" => {
+            "4" => {
                 println!("  Ingresa la posición (1 = izquierda):");
                 match leer_numero() {
                     Some(pos) if pos >= 1 && pos <= c.obt_longitud() => {
                         println!("  Carácter en posición {}: → '{}'", pos, c.obt_char(pos));
                     }
                     Some(_) => println!("  Posición fuera de rango (1 a {}).", c.obt_longitud()),
-                    None    => println!("  Posición inválida."),
+                    None => println!("  Posición inválida."),
                 }
-            } 
+            }
 
             "5" => {
                 println!("  Ingresa el caracter:");
-                let entrada =leer_linea();
+                let entrada = leer_linea();
                 match entrada.chars().next() {
                     Some(carac) => {
                         let resultado = c.cant_apar_char(carac);
-                        println!(" '{}' aparece {} vez/veces", carac, resultado);                        
+                        println!(" '{}' aparece {} vez/veces", carac, resultado);
                     }
-                    None => println!("No hay caracter")
+                    None => println!("No hay caracter"),
                 }
             }
 
@@ -193,7 +224,7 @@ fn main() {
                 print!("  Cadena invertida: ");
                 c.mostrar();
             }
-            
+
             "9" => {
                 if c.es_palindromo() {
                     println!("  Sí es palíndromo.");
@@ -202,8 +233,11 @@ fn main() {
                 }
             }
 
-            "q" | "Q" => { println!("\n  Hasta luego.\n"); break; }
-            _          => println!("  Opción no válida."),
+            "q" | "Q" => {
+                println!("\n  Hasta luego.\n");
+                break;
+            }
+            _ => println!("  Opción no válida."),
         }
     }
 }
